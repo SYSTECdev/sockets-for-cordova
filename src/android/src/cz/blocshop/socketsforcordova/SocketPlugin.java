@@ -41,7 +41,9 @@ public class SocketPlugin extends CordovaPlugin {
 
 		if (action.equals("open")) {
 			this.open(args, callbackContext);
-		} else if (action.equals("write")) {
+		} else if (action.equals("read")) {
+                        this.read(args, callbackContext);
+                } else if (action.equals("write")) {
 			this.write(args, callbackContext);
 		} else if (action.equals("shutdownWrite")) {
 			this.shutdownWrite(args, callbackContext);
@@ -70,6 +72,24 @@ public class SocketPlugin extends CordovaPlugin {
 		
 		socketAdapter.open(host, port);
 	}
+
+        private void read(CordovaArgs args, CallbackContext callbackContext) throws JSONException {
+                String socketKey = args.getString(0);
+                SocketAdapter socket = this.getSocketAdapter(socketKey);
+
+                try {
+                        byte[] dataBuffer = socket.read();
+
+                        JSONObject response = new JSONObject();
+                        
+                        response.put("socketKey", socketKey);
+                        response.put("data", new String(dataBuffer, "UTF-8"));
+
+                        callbackContext.success(response);
+                } catch (IOException e) {
+                        callbackContext.error(e.toString());
+                }
+        }
 	
 	private void write(CordovaArgs args, CallbackContext callbackContext) throws JSONException {
 		String socketKey = args.getString(0);

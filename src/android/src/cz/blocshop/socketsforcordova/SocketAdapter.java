@@ -23,6 +23,7 @@ import java.net.SocketException;
 
 public interface SocketAdapter {
 	public void open(String host, int port);
+        public byte[] read() throws IOException;
 	public void write(byte[] data) throws IOException;
 	public void shutdownWrite() throws IOException;
 	public void close() throws IOException;	

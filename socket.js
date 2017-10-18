@@ -35,7 +35,7 @@ function Socket() {
     this.socketKey = guid();
 }
 
-Socket.prototype.open = function (host, port, success, error) {
+Socket.prototype.open = function (host, port, asynRead, success, error) {
 
     success = success || function() { };
     error = error || function() { };
@@ -86,7 +86,24 @@ Socket.prototype.open = function (host, port, success, error) {
         },
         CORDOVA_SERVICE_NAME,
         "open",
-        [ this.socketKey, host, port ]);
+        [ this.socketKey, host, port, asynRead ]);
+};
+
+Socket.prototype.read = function(data, success, error) {
+    
+    success = success || function() { };
+    error = error || function() { };
+
+    if (!this._ensureState(Socket.State.OPENED, error)) {
+        return;
+    }
+
+    exec(
+        success, 
+        error, 
+        CORDOVA_SERIVE_NAME, 
+        "read", 
+        [ this.socketKey ]);
 };
 
 Socket.prototype.write = function (data, success, error) {

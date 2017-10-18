@@ -47,20 +47,39 @@ public class SocketAdapterImpl implements SocketAdapter {
     }
 
     @Override
-    public void open(final String host, final int port) {
+    public void open(final String host, final int port, final boolean asynRead) {
         this.executor.submit(new Runnable() {
             @Override
             public void run() {
                 try {
-					socket.connect(new InetSocketAddress(host, port));
-					invokeOpenEventHandler();
-					submitReadTask();
-				} catch (IOException e) {
-					Logging.Error(SocketAdapterImpl.class.getName(), "Error during connecting of socket", e.getCause());
-					invokeOpenErrorEventHandler(e.getMessage());
-				}
+                    socket.connect(new InetSocketAddress(host, port));
+                    invokeOpenEventHandler();
+
+                    if (asynRead)
+                        submitReadTask();
+                } catch (IOException e) {
+                    Logging.Error(SocketAdapterImpl.class.getName(), "Error during connecting of socket", e.getCause());
+                    invokeOpenErrorEventHandler(e.getMessage());
+                }
             }
         });
+    }
+
+    @Override
+    public byte[] read() throws IOException {
+        byte[] buffer = new byte[INPUT_STREAM_BUFFER_SIZE];
+        int bytesRead = 0;
+
+        if ((bytesRead = socket.getInputStream().read(buffer)) >= 0) {
+            byte[] data = buffer.length == bytesRead
+                ? buffer
+                : Arrays.copyOfRange(buffer, 0, bytesRead);
+
+            return data;
+        } else {
+            // Read error!
+            return new byte[0];
+        }
     }
     
     @Override

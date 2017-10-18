@@ -14,7 +14,7 @@ Install this plugin simply by:
 
 or you can use GIT repository for most recent version:
 
-`cordova plugin add https://github.com/blocshop/sockets-for-cordova`
+`cordova plugin add https://github.com/SYSTECdev/sockets-for-cordova`
 
 ## Sample usage
 Here is simple example of how to connect to remote server, consume data from it and close the connection.

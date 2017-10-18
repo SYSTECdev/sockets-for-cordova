@@ -27,7 +27,7 @@ var socket = new Socket();
 Set data consumer, error and close handlers:
 ```
 socket.onData = function(data) {
-  // invoked after new batch of data is received (typed array of bytes Uint8Array)
+  // if asynRead set to true, invoked after new batch of data is received (typed array of bytes Uint8Array)
 };
 socket.onError = function(errorMessage) {
   // invoked after error occurs during connection
@@ -41,6 +41,7 @@ Connect to server someremoteserver.com, with port 1234:
 socket.open(
   "someremoteserver.com",
   1234,
+  false, // if set to false, you must use read to receive data and onData event will be disabled
   function() {
     // invoked after successful opening of socket
   },
@@ -57,6 +58,16 @@ for (var i = 0; i < data.length; i++) {
   data[i] = dataString.charCodeAt(i);
 }
 socket.write(data);
+```
+
+Read data from server:
+```
+socket.read(function(data) {
+		var resp = data.data;
+        // handled response
+	}, function(e) {
+    	// something wrong
+    });
 ```
 
 Close the connection gracefully by sending FIN to server:
@@ -106,8 +117,16 @@ Establishes connection with the remote host.
 | ----------- |-----------------------------|--------------|
 | `host`      | `string`                    | Remote host/ip address |
 | `port`      | `number`                    | Tcp port number |
+| `asynRead`  | `boolean`                   | Asynchronize read |
 | `onSuccess` | `() => void`                | Success callback - called after successfull connection to the remote host. (optional)|
 | `onError`   | `(message: string) => void` | Error callback - called when some error occurs during connecting to the remote host. (optional)|
+
+#### `read(onSuccess?, onError?): void`
+Receive data from remote host.
+| parameter   | type          | description |
+| ----------- |-----------------------------|--------------|
+| `onSuccess` | `() => void`                | Success callback - called after data are successfully read to the input stream. (optional)|
+| `onError`   | `(message: string) => void` | Error callback - called when some error occurs during reading of data to the input stream. (optional)|
 
 #### `write(data, onSuccess?, onError?): void`
 Sends data to remote host.

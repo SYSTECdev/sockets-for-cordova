@@ -126,7 +126,7 @@ Receive data from remote host.
 
 | parameter   | type          | description |
 | ----------- |-----------------------------|--------------|
-| `onSuccess` | `() => void`                | Success callback - called after data are successfully read to the input stream. (optional)|
+| `onSuccess` | `(data) => void`            | Success callback - called after data are successfully read to the input stream. (optional)|
 | `onError`   | `(message: string) => void` | Error callback - called when some error occurs during reading of data to the input stream. (optional)|
 
 #### `write(data, onSuccess?, onError?): void`

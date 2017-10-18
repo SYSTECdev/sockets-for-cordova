@@ -63,7 +63,7 @@ socket.write(data);
 Read data from server:
 ```
 socket.read(function(data) {
-		var resp = data.data;
+	var resp = data.data;
         // handled response
 	}, function(e) {
     	// something wrong

@@ -123,6 +123,7 @@ Establishes connection with the remote host.
 
 #### `read(onSuccess?, onError?): void`
 Receive data from remote host.
+
 | parameter   | type          | description |
 | ----------- |-----------------------------|--------------|
 | `onSuccess` | `() => void`                | Success callback - called after data are successfully read to the input stream. (optional)|

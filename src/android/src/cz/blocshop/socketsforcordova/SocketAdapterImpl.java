@@ -31,6 +31,7 @@ import java.util.concurrent.Future;
 public class SocketAdapterImpl implements SocketAdapter {
     
     private final int INPUT_STREAM_BUFFER_SIZE = 16 * 1024;
+    private final int READ_TIMEOUT = 1000;
     private final Socket socket;
     
     private Consumer<Void> openEventHandler;

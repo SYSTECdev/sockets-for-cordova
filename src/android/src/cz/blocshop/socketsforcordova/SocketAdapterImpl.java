@@ -71,10 +71,31 @@ public class SocketAdapterImpl implements SocketAdapter {
     public byte[] read() throws IOException {
         byte[] buffer = new byte[INPUT_STREAM_BUFFER_SIZE];
         int bytesRead = 0;
+	int totalBytes = 0;
 
         try {
             socket.setSoTimeout(READ_TIMEOUT);
+	    
+	    // Loop for reading all avaliable data.
+	    while ((bytesRead = socket.getInputStream().read(buffer + totalBytes)) >= 0) {
+	    	if (bytesRead > 0)
+		    totalBytes += bytesRead;
+		else
+		    break;
+	    }
+	        
+	    if (bytesRead == 0) {
+	        byte[] data = buffer.length == totalBytes
+                        ? buffer
+                        : Arrays.copyOfRange(buffer, 0, totalBytes);
+			
+		return data;
+	    } else {
+                // Read error!
+                throw new IOException("Disconnect when reading data!");
+	    }
 
+	    /*
             if ((bytesRead = socket.getInputStream().read(buffer)) >= 0) {
                 byte[] data = buffer.length == bytesRead
                         ? buffer
@@ -85,6 +106,7 @@ public class SocketAdapterImpl implements SocketAdapter {
                 // Read error!
                 throw new IOException("Disconnect when reading data!");
             }
+	    */
         } catch (SocketTimeoutException e) {
             // Read timeout.
             return new String("READ_TIMEOUT").getBytes("UTF-8");

@@ -89,7 +89,7 @@ Socket.prototype.open = function (host, port, asynRead, success, error) {
         [ this.socketKey, host, port, asynRead ]);
 };
 
-Socket.prototype.read = function(data, success, error) {
+Socket.prototype.read = function(success, error) {
     
     success = success || function() { };
     error = error || function() { };
@@ -101,7 +101,7 @@ Socket.prototype.read = function(data, success, error) {
     exec(
         success, 
         error, 
-        CORDOVA_SERIVE_NAME, 
+        CORDOVA_SERVICE_NAME, 
         "read", 
         [ this.socketKey ]);
 };

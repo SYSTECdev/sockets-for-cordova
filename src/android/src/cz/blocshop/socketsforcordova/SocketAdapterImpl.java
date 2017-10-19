@@ -70,15 +70,22 @@ public class SocketAdapterImpl implements SocketAdapter {
         byte[] buffer = new byte[INPUT_STREAM_BUFFER_SIZE];
         int bytesRead = 0;
 
-        if ((bytesRead = socket.getInputStream().read(buffer)) >= 0) {
-            byte[] data = buffer.length == bytesRead
-                ? buffer
-                : Arrays.copyOfRange(buffer, 0, bytesRead);
+        try {
+            socket.setSoTimeout(READ_TIMEOUT);
 
-            return data;
-        } else {
-            // Read error!
-            return new byte[0];
+            if ((bytesRead = socket.getInputStream().read(buffer)) >= 0) {
+                byte[] data = buffer.length == bytesRead
+                        ? buffer
+                        : Arrays.copyOfRange(buffer, 0, bytesRead);
+
+                return data;
+            } else {
+                // Read error!
+                throw new IOException("Disconnect when reading data!");
+            }
+        } catch (SocketTimeoutException e) {
+            // Read timeout.
+            return new String("READ_TIMEOUT").getBytes("UTF-8");
         }
     }
     

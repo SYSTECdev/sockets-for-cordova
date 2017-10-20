@@ -32,7 +32,7 @@ import java.util.concurrent.Future;
 public class SocketAdapterImpl implements SocketAdapter {
     
     private final int INPUT_STREAM_BUFFER_SIZE = 16 * 1024;
-    private final int READ_TIMEOUT = 1000;
+    private final int READ_TIMEOUT = 500;
     private final Socket socket;
     
     private Consumer<Void> openEventHandler;
@@ -70,17 +70,24 @@ public class SocketAdapterImpl implements SocketAdapter {
     @Override
     public byte[] read() throws IOException {
         byte[] buffer = new byte[INPUT_STREAM_BUFFER_SIZE];
+        byte[] data = new byte[INPUT_STREAM_BUFFER_SIZE];
         int bytesRead = 0;
-	int totalBytes = 0;
+        int totalBytes = 0;
 
         try {
             socket.setSoTimeout(READ_TIMEOUT);
 
-            if ((bytesRead = socket.getInputStream().read(buffer)) >= 0) {
-                byte[] data = buffer.length == bytesRead
-                        ? buffer
-                        : Arrays.copyOfRange(buffer, 0, bytesRead);
+            // Loop for reading all avaliable data.
+            while ((bytesRead = socket.getInputStream().read(buffer)) >= 0) {
+                if (bytesRead > 0) {
+                    System.arraycopy(buffer, 0, data, totalBytes, bytesRead);
+                    totalBytes += bytesRead;
+                } else {
+                    break;
+                }
+            }
 
+            if (bytesRead == 0) {
                 return data;
             } else {
                 // Read error!
@@ -88,7 +95,8 @@ public class SocketAdapterImpl implements SocketAdapter {
             }
         } catch (SocketTimeoutException e) {
             // Read timeout.
-            return new String("READ_TIMEOUT").getBytes("UTF-8");
+            // System.out.println("Response: " + new String(data));
+            return new String(data).getBytes("UTF-8");
         }
     }
     
